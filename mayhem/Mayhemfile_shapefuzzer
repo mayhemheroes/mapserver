@@ -1,0 +1,7 @@
+project: mapserver
+target: shapefuzzer
+testsuite:
+  - file:///mayhem/mayhem/testsuite/shapefuzzer
+cmds:
+  - cmd: /mayhem/shapefuzzer
+    libfuzzer: true

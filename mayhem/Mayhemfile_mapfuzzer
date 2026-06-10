@@ -1,0 +1,8 @@
+project: mapserver
+target: mapfuzzer
+testsuite:
+  - file:///mayhem/mayhem/testsuite/mapfuzzer
+cmds:
+  - cmd: /mayhem/mapfuzzer
+    libfuzzer: true
+    dictionary: /mayhem/mayhem/mapfuzzer.dict

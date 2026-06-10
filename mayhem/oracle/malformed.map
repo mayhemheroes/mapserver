@@ -1,0 +1,11 @@
+MAP
+  NAME "OracleMap"
+  SIZE 400 300
+  LAYER
+    NAME "oracle_layer"
+    TYPE NOT_A_REAL_TYPE
+    THIS_IS_NOT_A_KEYWORD 12345
+  END
+END
+END
+END

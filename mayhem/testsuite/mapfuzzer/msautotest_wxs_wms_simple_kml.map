@@ -1,0 +1,146 @@
+#
+# Test WMS
+#
+# REQUIRES: INPUT=GDAL OUTPUT=KML SUPPORTS=WMS
+
+# Draw a map with a single polygon layer.  BBOX is set to keep image square
+# RUN_PARMS: wms_get_map_polygon.kml [MAPSERV] QUERY_STRING="map=[MAPFILE]&SERVICE=WMS&VERSION=1.1.0&REQUEST=GetMap&SRS=EPSG:4326&BBOX=-67.5725,42.3683,-58.9275,48.13&FORMAT=kml&WIDTH=300&HEIGHT=200&STYLES=&LAYERS=road" > [RESULT_DEMIME]
+
+# Same with KMZ output
+# RUN_PARMS: wms_get_map_polygon.kmz [MAPSERV] QUERY_STRING="map=[MAPFILE]&SERVICE=WMS&VERSION=1.1.0&REQUEST=GetMap&SRS=EPSG:4326&BBOX=-67.5725,42.3683,-58.9275,48.13&FORMAT=kmz&WIDTH=300&HEIGHT=200&STYLES=&LAYERS=road" > [RESULT_DEMIME]
+
+# RUN_PARMS: wms_simple_kml_label.kml [MAPSERV] QUERY_STRING="map=[MAPFILE]&SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&CRS=EPSG%3A4326&BBOX=40,-70,50,-60&WIDTH=400&HEIGHT=400&LAYERS=popplace&STYLES=&FORMAT=kml" > [RESULT_DEMIME]
+
+MAP
+
+NAME WMS_TEST
+STATUS ON
+SIZE 400 300
+#EXTENT   2018000 -73300 3410396 647400
+#UNITS METERS
+EXTENT -67.5725 42 -58.9275 48.5
+UNITS DD
+IMAGECOLOR 255 255 255
+SHAPEPATH ./data
+SYMBOLSET etc/symbols.sym
+FONTSET etc/fonts.txt
+
+# override the default settings to add TIMESTAMP=0
+# so output remains the same on each run
+OUTPUTFORMAT
+  NAME "kmz"
+  DRIVER KMZ
+  MIMETYPE "application/vnd.google-earth.kmz"
+  IMAGEMODE RGB
+  EXTENSION "kmz"
+  FORMATOPTION "TIMESTAMP=0"
+END
+
+#
+# Start of web interface definition
+#
+WEB
+
+ IMAGEPATH "/tmp/ms_tmp/"
+ IMAGEURL "/ms_tmp/"
+
+  METADATA
+    "ows_updatesequence"   "123"
+    "wms_title"		   "Test simple wms"
+    "wms_onlineresource"   "http://localhost/path/to/wms_simple?"
+    "wms_srs"		   "EPSG:42304 EPSG:42101 EPSG:4269 EPSG:4326"
+    "ows_schemas_location" "http://schemas.opengis.net"
+    "ows_keywordlist" "ogc,wms,mapserver"
+    "ows_service_onlineresource" "http://www.mapserver.org/"
+    "ows_fees" "None"
+    "ows_accessconstraints" "None"
+    "ows_addresstype" "postal"
+    "ows_address"     "123 SomeRoad Road"
+    "ows_city" "Toronto"
+    "ows_stateorprovince" "Ontario"
+    "ows_postcode" "xxx-xxx"
+    "ows_country" "Canada"
+    "ows_contactelectronicmailaddress" "tomkralidis@xxxxxxx.xxx"
+    "ows_contactvoicetelephone" "+xx-xxx-xxx-xxxx"
+    "ows_contactfacsimiletelephone" "+xx-xxx-xxx-xxxx"
+    "ows_contactperson" "Tom Kralidis"
+    "ows_contactorganization" "MapServer"
+    "ows_contactposition" "self"
+
+    "ows_rootlayer_title" "My Layers"
+    "ows_rootlayer_abstract" "These are my layers"
+    "ows_rootlayer_keywordlist" "layers,list"
+    "ows_layerlimit" "1"
+    "ows_enable_request" "*" 
+  END
+END
+
+PROJECTION
+  "init=epsg:4326"
+  #"init=./data/epsg2:42304"
+END
+
+
+#
+# Start of layer definitions
+#
+
+LAYER
+  NAME road
+  DATA road
+  TEMPLATE "ttt"
+  METADATA
+    "wms_title"       "road"
+    "wms_description" "Roads of I.P.E."
+    "wms_srs" "EPSG:43204"
+    "gml_include_items" "all"
+  END
+  TYPE LINE
+  STATUS ON
+  PROJECTION
+    "init=./data/epsg2:42304"
+  END
+
+  CLASSITEM "Name_e"
+  CLASS
+    NAME "Roads"
+    STYLE
+        SYMBOL 0 
+        COLOR 220 0 0
+    END
+  END
+END # Layer
+
+LAYER
+  NAME popplace
+  DATA popplace
+  METADATA
+    "wms_title"         "popplace"
+    "wms_description"   "Cities of I.P.E."
+    "wms_result_fields" "NAME"
+    "gml_NAME_alias" "NAME_ALIAS"
+  END
+  TYPE POINT
+  STATUS ON
+  PROJECTION
+    "init=epsg:3978"
+  END
+
+  LabelItem "Name"
+  CLASSITEM "Capital" 
+
+  CLASS
+    NAME "Cities"
+    LABEL
+      COLOR  0 0 0
+      FONT Vera
+      TYPE truetype
+      SIZE 8
+      POSITION AUTO			
+      PARTIALS FALSE
+      OUTLINECOLOR 255 255 255			
+    END 
+  END
+END # Layer
+
+END # Map File

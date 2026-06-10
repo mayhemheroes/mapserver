@@ -1,0 +1,8 @@
+project: mapserver
+target: configfuzzer
+testsuite:
+  - file:///mayhem/mayhem/testsuite/configfuzzer
+cmds:
+  - cmd: /mayhem/configfuzzer
+    libfuzzer: true
+    dictionary: /mayhem/mayhem/configfuzzer.dict

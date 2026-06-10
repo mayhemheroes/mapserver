@@ -1,0 +1,129 @@
+#
+# Test MapBox Vector Tile output
+#
+# REQUIRES: INPUT=GDAL SUPPORTS=PBF SUPPORTS=WMS
+#
+# RUN_PARMS: wms_mvt_xprotobuf.mvt [MAPSERV] QUERY_STRING="map=[MAPFILE]&SERVICE=WMS&VERSION=1.1.0&REQUEST=GetMap&SRS=EPSG:3857&BBOX=-7514065.628545966,5009377.085697311,-6261721.357121638,6261721.357121639&WIDTH=256&HEIGHT=256&STYLES=&LAYERS=road&FORMAT=application/x-protobuf" > [RESULT_DEVERSION]
+# RUN_PARMS: wms_mvt.mvt [MAPSERV] QUERY_STRING="map=[MAPFILE]&SERVICE=WMS&VERSION=1.1.0&REQUEST=GetMap&SRS=EPSG:3857&BBOX=-7514065.628545966,5009377.085697311,-6261721.357121638,6261721.357121639&WIDTH=256&HEIGHT=256&STYLES=&LAYERS=road&FORMAT=application/vnd.mapbox-vector-tile" > [RESULT_DEVERSION]
+
+# Test access with STYLES and FILTER parameters
+# RUN_PARMS: wms_mvt_filtered.mvt [MAPSERV] QUERY_STRING="map=[MAPFILE]&SERVICE=WMS&VERSION=1.1.0&REQUEST=GetMap&SRS=EPSG:3857&BBOX=-7514065.628545966,5009377.085697311,-6261721.357121638,6261721.357121639&WIDTH=256&HEIGHT=256&STYLES=&LAYERS=road&FILTER=<Filter><PropertyIsEqualTo><PropertyName>F_CODE</PropertyName><Literal>67</Literal></PropertyIsEqualTo></Filter>&FORMAT=application/vnd.mapbox-vector-tile" > [RESULT_DEVERSION]
+# RUN_PARMS: wms_mvt_group.mvt [MAPSERV] QUERY_STRING="map=[MAPFILE]&SERVICE=WMS&VERSION=1.1.0&REQUEST=GetMap&SRS=EPSG:3857&BBOX=-7514065.628545966,5009377.085697311,-6261721.357121638,6261721.357121639&WIDTH=256&HEIGHT=256&STYLES=main&LAYERS=road2&FORMAT=application/vnd.mapbox-vector-tile" > [RESULT_DEVERSION]
+# RUN_PARMS: wms_mvt_defaultgroup.mvt [MAPSERV] QUERY_STRING="map=[MAPFILE]&SERVICE=WMS&VERSION=1.1.0&REQUEST=GetMap&SRS=EPSG:3857&BBOX=-7514065.628545966,5009377.085697311,-6261721.357121638,6261721.357121639&WIDTH=256&HEIGHT=256&STYLES=&LAYERS=road2&FORMAT=application/vnd.mapbox-vector-tile" > [RESULT_DEVERSION]
+
+
+MAP
+
+NAME WMS_MVT_TEST
+STATUS ON
+SIZE 400 300
+EXTENT -67.5725 42 -58.9275 48.5
+UNITS DD
+IMAGECOLOR 255 255 255
+SHAPEPATH ./data
+SYMBOLSET etc/symbols.sym
+FONTSET etc/fonts.txt
+
+
+#
+# Start of web interface definition
+#
+WEB
+
+ IMAGEPATH "/tmp/ms_tmp/"
+ IMAGEURL "/ms_tmp/"
+
+  METADATA
+    "ows_updatesequence"   "123"
+    "wms_title"		   "Test simple MVT wms"
+    "wms_onlineresource"   "http://localhost/path/to/wms_simple?"
+    "wms_srs"		   "EPSG:42304 EPSG:42101 EPSG:4269 EPSG:4326"
+    "ows_enable_request" "*" 
+  END
+END
+
+PROJECTION
+  "init=epsg:4326"
+END
+
+
+#
+# Start of layer definitions
+#
+
+LAYER
+  NAME road
+  DATA road
+  TEMPLATE "ttt"
+  METADATA
+    "wms_title"       "road"
+    "wms_description" "Roads of I.P.E."
+    "wms_srs" "EPSG:43204 EPSG:3857"
+    "gml_include_items" "all"
+  END
+  TYPE LINE
+  STATUS ON
+  PROJECTION
+    "init=./data/epsg2:42304"
+  END
+
+  CLASSITEM "Name_e"
+  CLASS
+    NAME "Roads"
+    STYLE
+        SYMBOL 0 
+        COLOR 220 0 0
+    END
+  END
+END # Layer
+
+# A road layer with WMS groups
+LAYER
+  NAME road2
+  DATA road
+  TEMPLATE "ttt"
+  METADATA
+    "wms_title"       "road2"
+    "wms_description" "Roads of I.P.E."
+    "wms_srs" "EPSG:43204 EPSG:3857"
+    "gml_include_items" "all"
+  END
+  TYPE LINE
+  STATUS ON
+  PROJECTION
+    "init=./data/epsg2:42304"
+  END
+
+  CLASSITEM "Name_e"
+  CLASSGROUP "all"
+
+  CLASS
+    GROUP "all"
+    NAME "Roads"
+    STYLE
+        SYMBOL 0 
+        COLOR 0 0 0
+    END
+  END
+
+  CLASS
+    GROUP "main"
+    NAME "Roads"
+    EXPRESSION ([F_CODE] = 67)
+    STYLE
+        SYMBOL 0 
+        COLOR 0 220 0
+    END
+  END
+  CLASS
+    GROUP "other"
+    NAME "Roads"
+    EXPRESSION ([F_CODE] != 67)
+    STYLE
+        SYMBOL 0 
+        COLOR 220 0 0
+    END
+  END  
+END # Layer
+
+END # Map File
