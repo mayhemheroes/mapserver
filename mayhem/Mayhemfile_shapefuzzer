@@ -1,0 +1,8 @@
+project: mapserver
+target: shapefuzzer
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/shapefuzzer/testsuite
+cmds:
+  - cmd: /mayhem/shapefuzzer
+    libfuzzer: true

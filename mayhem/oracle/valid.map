@@ -1,0 +1,20 @@
+MAP
+  NAME "OracleMap"
+  STATUS ON
+  SIZE 400 300
+  EXTENT -180 -90 180 90
+  IMAGETYPE PNG
+
+  LAYER
+    NAME "oracle_layer"
+    TYPE POINT
+    STATUS DEFAULT
+    CLASS
+      NAME "default"
+      STYLE
+        COLOR 255 0 0
+        SIZE 5
+      END
+    END
+  END
+END
